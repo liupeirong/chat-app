@@ -32,12 +32,30 @@
     width: 100%;
     height: auto;
     box-sizing: border-box;
-    justify-content: space-between;
+    justify-content: flex-end;
+    column-gap: 5em;
 }
 
 .answerDisclaimerContainer {
-    justify-content: center;
+    column-gap: 1em;
     display: flex;
+}
+
+.answerFeedback {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 16px;
+
+    display: flex;
+    color: #f4d809;
+    flex: none;
+    order: 1;
+    flex-grow: 0;
+}
+
+.answerFeedback:hover {
+    cursor:pointer;
 }
 
 .answerDisclaimer {

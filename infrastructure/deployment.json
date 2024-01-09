@@ -134,7 +134,7 @@
                 "description": "Name of Azure OpenAI Resource"
             }
         },
-        "AzureOpenAIModel": {
+        "AzureOpenAIDeployment": {
             "type": "string",
             "metadata": {
                 "description": "Azure OpenAI Model Deployment Name"
@@ -452,8 +452,8 @@
                             "value": "[parameters('AzureOpenAIResource')]"
                         },
                         {
-                            "name": "AZURE_OPENAI_MODEL",
-                            "value": "[parameters('AzureOpenAIModel')]"
+                            "name": "AZURE_OPENAI_DEPLOYMENT",
+                            "value": "[parameters('AzureOpenAIDeployment')]"
                         },
                         {
                             "name": "AZURE_OPENAI_KEY",

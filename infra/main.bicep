@@ -31,7 +31,7 @@ param openAiResourceName string = ''
 param openAiResourceGroupName string = ''
 param openAiResourceGroupLocation string = location
 param openAiSkuName string = ''
-param openAIModel string = 'turbo16k'
+param openAIDeployment string = 'turbo16k'
 param openAIModelName string = 'gpt-35-turbo-16k'
 param openAITemperature int = 0
 param openAITopP int = 1
@@ -129,7 +129,7 @@ module backend 'core/host/appservice.bicep' = {
       AZURE_SEARCH_URL_COLUMN: searchUrlColumn
       // openai
       AZURE_OPENAI_RESOURCE: openAi.outputs.name
-      AZURE_OPENAI_MODEL: openAIModel
+      AZURE_OPENAI_DEPLOYMENT: openAIDeployment
       AZURE_OPENAI_MODEL_NAME: openAIModelName
       AZURE_OPENAI_KEY: openAi.outputs.key
       AZURE_OPENAI_TEMPERATURE: openAITemperature
@@ -156,7 +156,7 @@ module openAi 'core/ai/cognitiveservices.bicep' = {
     }
     deployments: [
       {
-        name: openAIModel
+        name: openAIDeployment
         model: {
           format: 'OpenAI'
           name: openAIModelName
@@ -311,7 +311,7 @@ output AZURE_SEARCH_URL_COLUMN string = searchUrlColumn
 output AZURE_OPENAI_RESOURCE string = openAi.outputs.name
 output AZURE_OPENAI_RESOURCE_GROUP string = openAiResourceGroup.name
 output AZURE_OPENAI_ENDPOINT string = openAi.outputs.endpoint
-output AZURE_OPENAI_MODEL string = openAIModel
+output AZURE_OPENAI_DEPLOYMENT string = openAIDeployment
 output AZURE_OPENAI_MODEL_NAME string = openAIModelName
 output AZURE_OPENAI_SKU_NAME string = openAi.outputs.skuName
 output AZURE_OPENAI_KEY string = openAi.outputs.key

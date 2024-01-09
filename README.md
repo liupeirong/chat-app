@@ -25,7 +25,7 @@ Please see the [section below](#add-an-identity-provider) for important informat
     
     These variables are required:
     - `AZURE_OPENAI_RESOURCE`
-    - `AZURE_OPENAI_MODEL`
+    - `AZURE_OPENAI_DEPLOYMENT`
     - `AZURE_OPENAI_KEY`
 
     These variables are optional:
@@ -76,6 +76,8 @@ To enable chat history, you will need to set up CosmosDB resources. The ARM temp
 - `AZURE_COSMOSDB_DATABASE`
 - `AZURE_COSMOSDB_CONVERSATIONS_CONTAINER`
 - `AZURE_COSMOSDB_ACCOUNT_KEY`
+
+If you provision CosmosDB container without using the provided ARM template, make sure the partition key is `/userId`.
 
 As above, start the app with `start.cmd`, then visit the local running app at http://127.0.0.1:5000.
 
@@ -210,7 +212,7 @@ Note: settings starting with `AZURE_SEARCH` are only needed when using Azure Ope
 |AZURE_SEARCH_PERMITTED_GROUPS_COLUMN||Field from your Azure Cognitive Search index that contains AAD group IDs that determine document-level access control.|
 |AZURE_SEARCH_STRICTNESS|3|Integer from 1 to 5 specifying the strictness for the model limiting responses to your data.|
 |AZURE_OPENAI_RESOURCE||the name of your Azure OpenAI resource|
-|AZURE_OPENAI_MODEL||The name of your model deployment|
+|AZURE_OPENAI_DEPLOYMENT||The name of your model deployment|
 |AZURE_OPENAI_ENDPOINT||The endpoint of your Azure OpenAI resource.|
 |AZURE_OPENAI_MODEL_NAME|gpt-35-turbo-16k|The name of the model|
 |AZURE_OPENAI_KEY||One of the API keys of your Azure OpenAI resource|

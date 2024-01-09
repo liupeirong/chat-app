@@ -31,6 +31,10 @@ export const Answer = ({
         toggleIsRefAccordionOpen();
       };
 
+    const handleFeedback = (feedback: string) => {
+        alert(`Your feedback is ${feedback}!`);
+      };
+
     useEffect(() => {
         setChevronIsExpanded(isRefAccordionOpen);
     }, [isRefAccordionOpen]);
@@ -92,7 +96,8 @@ export const Answer = ({
                     </Stack.Item>
                 )}
                 <Stack.Item className={styles.answerDisclaimerContainer}>
-                    <span className={styles.answerDisclaimer}>AI-generated content may be incorrect</span>
+                  <FontIcon className={styles.answerFeedback} onClick={()=>handleFeedback("up")} iconName="LikeSolid" />
+                  <FontIcon className={styles.answerFeedback} onClick={()=>handleFeedback("down")} iconName="DislikeSolid" />
                 </Stack.Item>
                 </Stack>
                 {chevronIsExpanded && 
