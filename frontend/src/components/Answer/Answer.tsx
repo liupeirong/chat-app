@@ -14,11 +14,13 @@ import supersub from 'remark-supersub'
 interface Props {
     answer: AskResponse;
     onCitationClicked: (citedDocument: Citation) => void;
+    onFeedbackClicked: (feedback: string) => void;
 }
 
 export const Answer = ({
     answer,
-    onCitationClicked
+    onCitationClicked,
+    onFeedbackClicked
 }: Props) => {
     const [isRefAccordionOpen, { toggle: toggleIsRefAccordionOpen }] = useBoolean(false);
     const filePathTruncationLimit = 50;
@@ -29,10 +31,6 @@ export const Answer = ({
     const handleChevronClick = () => {
         setChevronIsExpanded(!chevronIsExpanded);
         toggleIsRefAccordionOpen();
-      };
-
-    const handleFeedback = (feedback: string) => {
-        alert(`Your feedback is ${feedback}!`);
       };
 
     useEffect(() => {
@@ -95,10 +93,11 @@ export const Answer = ({
                         </Stack>
                     </Stack.Item>
                 )}
+                { answer.answer.toLowerCase() != "generating answer..." && 
                   <Stack.Item className={styles.answerFeedbackContainer}>
-                    <FontIcon className={styles.answerFeedbackIcon} onClick={()=>handleFeedback("up")} iconName="LikeSolid" />
-                    <FontIcon className={styles.answerFeedbackIcon} onClick={()=>handleFeedback("down")} iconName="DislikeSolid" />
-                  </Stack.Item>
+                    <FontIcon className={styles.answerFeedbackIcon} onClick={()=>onFeedbackClicked("up")} iconName="LikeSolid" />
+                    <FontIcon className={styles.answerFeedbackIcon} onClick={()=>onFeedbackClicked("down")} iconName="DislikeSolid" />
+                  </Stack.Item> }
                 </Stack>
                 {chevronIsExpanded && 
                     <div style={{ marginTop: 8, display: "flex", flexFlow: "wrap column", maxHeight: "150px", gap: "4px" }}>

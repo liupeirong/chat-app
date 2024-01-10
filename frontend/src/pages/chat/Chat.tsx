@@ -609,6 +609,7 @@ const Chat = () => {
                                                         citations: parseCitationFromMessage(messages[index - 1]),
                                                     }}
                                                     onCitationClicked={c => onShowCitation(c)}
+                                                    onFeedbackClicked={f => alert(f)}
                                                 />
                                             </div> : answer.role === ERROR ? <div className={styles.chatMessageError}>
                                                 <Stack horizontal className={styles.chatMessageErrorContent}>
@@ -629,6 +630,7 @@ const Chat = () => {
                                                     citations: []
                                                 }}
                                                 onCitationClicked={() => null}
+                                                onFeedbackClicked={() => null}
                                             />
                                         </div>
                                     </>

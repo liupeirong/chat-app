@@ -3,7 +3,7 @@ param name string
 param location string = resourceGroup().location
 param tags object = {}
 
-@allowed([ 'GlobalDocumentDB', 'MongoDB', 'Parse' ])
+@allowed([ 'GlobalDocumentDB', 'Parse' ])
 param kind string
 
 resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' = {
@@ -23,7 +23,7 @@ resource cosmos 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' = {
     databaseAccountOfferType: 'Standard'
     enableAutomaticFailover: false
     enableMultipleWriteLocations: false
-    apiProperties: (kind == 'MongoDB') ? { serverVersion: '4.0' } : {}
+    apiProperties: {}
     capabilities: [ { name: 'EnableServerless' } ]
   }
 }
