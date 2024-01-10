@@ -32,30 +32,29 @@
     width: 100%;
     height: auto;
     box-sizing: border-box;
-    justify-content: flex-end;
-    column-gap: 5em;
+    justify-content: flex-start;
 }
 
-.answerDisclaimerContainer {
-    column-gap: 1em;
-    display: flex;
-}
+.answerFeedbackContainer {
+    margin-left: auto;
 
-.answerFeedback {
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
     line-height: 16px;
+    color: #f4d809;
 
     display: flex;
-    color: #f4d809;
-    flex: none;
-    order: 1;
-    flex-grow: 0;
+    column-gap: 0.5em;
 }
 
-.answerFeedback:hover {
+.answerFeedbackIcon:hover {
     cursor:pointer;
+}
+
+.answerDisclaimerContainer {
+    justify-content: center;
+    display: flex;
 }
 
 .answerDisclaimer {

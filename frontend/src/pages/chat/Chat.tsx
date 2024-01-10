@@ -717,6 +717,7 @@ const Chat = () => {
                                 conversationId={appStateContext?.state.currentChat?.id ? appStateContext?.state.currentChat?.id : undefined}
                             />
                         </Stack>
+                        <span className={styles.aiAnswerDisclaimer}>AI-generated content may be incorrect.</span>
                     </div>
                     {/* Citation Panel */}
                     {messages && messages.length > 0 && isCitationPanelOpen && activeCitation && ( 

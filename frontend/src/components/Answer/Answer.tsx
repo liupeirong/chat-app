@@ -95,10 +95,10 @@ export const Answer = ({
                         </Stack>
                     </Stack.Item>
                 )}
-                <Stack.Item className={styles.answerDisclaimerContainer}>
-                  <FontIcon className={styles.answerFeedback} onClick={()=>handleFeedback("up")} iconName="LikeSolid" />
-                  <FontIcon className={styles.answerFeedback} onClick={()=>handleFeedback("down")} iconName="DislikeSolid" />
-                </Stack.Item>
+                  <Stack.Item className={styles.answerFeedbackContainer}>
+                    <FontIcon className={styles.answerFeedbackIcon} onClick={()=>handleFeedback("up")} iconName="LikeSolid" />
+                    <FontIcon className={styles.answerFeedbackIcon} onClick={()=>handleFeedback("down")} iconName="DislikeSolid" />
+                  </Stack.Item>
                 </Stack>
                 {chevronIsExpanded && 
                     <div style={{ marginTop: 8, display: "flex", flexFlow: "wrap column", maxHeight: "150px", gap: "4px" }}>
