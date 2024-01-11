@@ -11,6 +11,7 @@
       "module": "flask",
       "envFile": "${workspaceFolder}/.env",
       "args": ["run", "--no-debugger", "--no-reload", "-p 5000"],
+      "cwd": "${workspaceFolder}/backend",
       "justMyCode": true
     }
   ]

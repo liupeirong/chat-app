@@ -1,3 +1,7 @@
+import logging
+import requests
+
+
 def get_authenticated_user_details(request_headers):
     user_object = {}
 
@@ -18,3 +22,30 @@ def get_authenticated_user_details(request_headers):
     user_object['aad_id_token'] = raw_user_object["X-Ms-Token-Aad-Id-Token"]
 
     return user_object
+
+
+def fetchUserGroups(userToken, nextLink=None):
+    # Recursively fetch group membership
+    if nextLink:
+        endpoint = nextLink
+    else:
+        endpoint = "https://graph.microsoft.com/v1.0/me/transitiveMemberOf?$select=id"
+    
+    headers = {
+        'Authorization': "bearer " + userToken
+    }
+    try :
+        r = requests.get(endpoint, headers=headers)
+        if r.status_code != 200:
+            logging.error(f"Error fetching user groups: {r.status_code} {r.text}")
+            return []
+        
+        r = r.json()
+        if "@odata.nextLink" in r:
+            nextLinkData = fetchUserGroups(userToken, r["@odata.nextLink"])
+            r['value'].extend(nextLinkData)
+        
+        return r['value']
+    except Exception as e:
+        logging.error(f"Exception in fetchUserGroups: {e}")
+        return []

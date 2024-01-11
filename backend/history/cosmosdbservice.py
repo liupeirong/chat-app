@@ -1,9 +1,6 @@
-import os
 import uuid
 from datetime import datetime
-from flask import Flask, request
-from azure.identity import DefaultAzureCredential  
-from azure.cosmos import CosmosClient, PartitionKey  
+from azure.cosmos import CosmosClient
   
 class CosmosConversationClient():
     

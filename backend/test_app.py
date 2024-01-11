@@ -1,4 +1,4 @@
-from app import format_as_ndjson
+from utils.llmrest import format_as_ndjson
 
 
 def test_format_as_ndjson():
