@@ -2,110 +2,24 @@ import os
 import json
 import logging
 import requests
+from openai import AzureOpenAI
 import openai
 from flask import Response, request
 
 from auth.auth_utils import fetchUserGroups
+from config import AzureAISearchConfig, AzureOpenAPIConfig
+from aoai_llm import stream_answer
 
 # AOAI Integration Settings
-AZURE_OPENAI_ENDPOINT = os.environ.get("AZURE_OPENAI_ENDPOINT")
-AZURE_OPENAI_KEY = os.environ.get("AZURE_OPENAI_KEY")
-AZURE_OPENAI_API_VERSION = os.environ.get("AZURE_OPENAI_API_VERSION")
-AZURE_OPENAI_DEPLOYMENT = os.environ.get("AZURE_OPENAI_DEPLOYMENT")
-AZURE_OPENAI_TEMPERATURE = os.environ.get("AZURE_OPENAI_TEMPERATURE", 0)
-AZURE_OPENAI_TOP_P = os.environ.get("AZURE_OPENAI_TOP_P", 1.0)
-AZURE_OPENAI_MAX_TOKENS = os.environ.get("AZURE_OPENAI_MAX_TOKENS", 1000)
-AZURE_OPENAI_EMBEDDING_DEPLOYMENT = os.environ.get("AZURE_OPENAI_EMBEDDING_DEPLOYMENT", "")
-AZURE_OPENAI_STREAM = os.environ.get("AZURE_OPENAI_STREAM", "true")
-AZURE_OPENAI_SYSTEM_MESSAGE = os.environ.get("AZURE_OPENAI_SYSTEM_MESSAGE", "You are an AI assistant that helps people find information.")
+aoai = AzureOpenAPIConfig()
+aais = AzureAISearchConfig()
 
 
-def generateFilterString(userToken):
-    # Get list of groups user is a member of
-    userGroups = fetchUserGroups(userToken)
-
-    # Construct filter string
-    if not userGroups:
-        logging.debug("No user groups found")
-
-    group_ids = ", ".join([obj['id'] for obj in userGroups])
-    return f"{AZURE_SEARCH_PERMITTED_GROUPS_COLUMN}/any(g:search.in(g, '{group_ids}'))"
-
-
-def prepare_body_headers_with_data(request):
-    request_messages = request.json["messages"]
-
-    body = {
-        "messages": request_messages,
-        "temperature": float(AZURE_OPENAI_TEMPERATURE),
-        "max_tokens": int(AZURE_OPENAI_MAX_TOKENS),
-        "top_p": float(AZURE_OPENAI_TOP_P),
-        "stop": None,
-        "stream": True,
-        "dataSources": []
-    }
-
-    # TODO: Remove once converted to Search SDK call
-    # if DATASOURCE_TYPE == "AzureCognitiveSearch":
-    #     # Set query type
-    #     query_type = "simple"
-    #     if AZURE_SEARCH_QUERY_TYPE:
-    #         query_type = AZURE_SEARCH_QUERY_TYPE
-    #     elif AZURE_SEARCH_USE_SEMANTIC_SEARCH.lower() == "true" and AZURE_SEARCH_SEMANTIC_SEARCH_CONFIG:
-    #         query_type = "semantic"
-
-    #     # Set filter
-    #     filter = None
-    #     userToken = None
-    #     if AZURE_SEARCH_PERMITTED_GROUPS_COLUMN:
-    #         userToken = request.headers.get('X-MS-TOKEN-AAD-ACCESS-TOKEN', "")
-    #         logging.debug(f"USER TOKEN is {'present' if userToken else 'not present'}")
-
-    #         filter = generateFilterString(AZURE_SEARCH_PERMITTED_GROUPS_COLUMN, userToken)
-    #         logging.debug(f"FILTER: {filter}")
-
-    #     body["dataSources"].append(
-    #         {
-    #             "type": "AzureCognitiveSearch",
-    #             "parameters": {
-    #                 "endpoint": f"https://{AZURE_SEARCH_SERVICE}.search.windows.net",
-    #                 "key": AZURE_SEARCH_KEY,
-    #                 "indexName": AZURE_SEARCH_INDEX,
-    #                 "fieldsMapping": {
-    #                     "contentFields": parse_multi_columns(AZURE_SEARCH_CONTENT_COLUMNS) if AZURE_SEARCH_CONTENT_COLUMNS else [],
-    #                     "titleField": AZURE_SEARCH_TITLE_COLUMN if AZURE_SEARCH_TITLE_COLUMN else None,
-    #                     "urlField": AZURE_SEARCH_URL_COLUMN if AZURE_SEARCH_URL_COLUMN else None,
-    #                     "filepathField": AZURE_SEARCH_FILENAME_COLUMN if AZURE_SEARCH_FILENAME_COLUMN else None,
-    #                     "vectorFields": parse_multi_columns(AZURE_SEARCH_VECTOR_COLUMNS) if AZURE_SEARCH_VECTOR_COLUMNS else []
-    #                 },
-    #                 "inScope": True if AZURE_SEARCH_ENABLE_IN_DOMAIN.lower() == "true" else False,
-    #                 "topNDocuments": AZURE_SEARCH_TOP_K,
-    #                 "queryType": query_type,
-    #                 "semanticConfiguration": AZURE_SEARCH_SEMANTIC_SEARCH_CONFIG if AZURE_SEARCH_SEMANTIC_SEARCH_CONFIG else "",
-    #                 "roleInformation": AZURE_OPENAI_SYSTEM_MESSAGE,
-    #                 "filter": filter,
-    #                 "strictness": int(AZURE_SEARCH_STRICTNESS)
-    #             }
-    #         })
-    # else:
-    #     raise Exception(f"DATASOURCE_TYPE is not configured or unknown: {DATASOURCE_TYPE}")
-
-    if "vector" in query_type.lower():
-        body["dataSources"][0]["parameters"]["embeddingDeploymentName"] = AZURE_OPENAI_EMBEDDING_DEPLOYMENT
-
-    headers = {
-        'Content-Type': 'application/json',
-        'api-key': AZURE_OPENAI_KEY,
-        "x-ms-useragent": "GitHubSampleWebApp/PublicAPI/3.0.0"
-    }
-
-    return body, headers
-
-
-def stream_with_data(body, headers, endpoint, history_metadata={}):
+def stream_with_data(messages, history_metadata={}, user_token=None):
+    user_groups = fetchUserGroups(user_token)
     s = requests.Session()
     try:
-        with s.post(endpoint, json=body, headers=headers, stream=True) as r:
+        with stream_answer(messages, history_metadata, user_groups) as r:
             for line in r.iter_lines(chunk_size=10):
                 response = {
                     "id": "",
@@ -201,13 +115,11 @@ def formatApiResponseStreaming(rawResponse):
     return response
 
 
-def conversation_with_data(request_body):
-    body, headers = prepare_body_headers_with_data(request)
-    base_url = AZURE_OPENAI_ENDPOINT 
-    endpoint = f"{base_url}openai/deployments/{AZURE_OPENAI_DEPLOYMENT}/extensions/chat/completions?api-version={AZURE_OPENAI_API_VERSION}"
+def conversation_with_data(request_body, user_token=None):
+    request_messages = request.json["messages"]
     history_metadata = request_body.get("history_metadata", {})
 
-    return Response(stream_with_data(body, headers, endpoint, history_metadata), mimetype='text/event-stream')
+    return Response(stream_with_data(request_messages, history_metadata, user_token), mimetype='text/event-stream')
 
 
 def format_as_ndjson(obj: dict) -> str:

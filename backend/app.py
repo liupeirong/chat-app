@@ -33,9 +33,10 @@ cosmos_conversation_client = init_cosmosdb_client()
 
 @app.route("/conversation", methods=["GET", "POST"])
 def conversation():
+    user_token = request.headers.get('X-MS-TOKEN-AAD-ACCESS-TOKEN', "")
     request_body = request.json
     try:
-        return conversation_with_data(request_body)
+        return conversation_with_data(request_body, user_token)
     except Exception as e:
         logging.exception("Exception in /conversation")
         return jsonify({"error": str(e)}), 500

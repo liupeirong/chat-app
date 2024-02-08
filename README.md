@@ -50,7 +50,6 @@ This repo contains sample code for a simple chat webapp that integrates with Azu
     |AZURE_SEARCH_URL_COLUMN||Field from your Azure Cognitive Search index that contains a URL for the document, e.g. an Azure Blob Storage URI. This value is not currently used.|
     |AZURE_SEARCH_VECTOR_COLUMNS||List of fields in your Azure Cognitive Search index that contain vector embeddings of your documents to use when formulating a bot response. Represent these as a string joined with "|", e.g. `"product_description|product_manual"`|
     |AZURE_SEARCH_PERMITTED_GROUPS_COLUMN||Field from your Azure Cognitive Search index that contains AAD group IDs that determine document-level access control.|
-    |AZURE_SEARCH_STRICTNESS|3|Integer from 1 to 5 specifying the strictness for the model limiting responses to your data.|
 
 3. Start the app with `start.cmd`. This will build the frontend, install backend dependencies, and then start the app.
 4. You can see the local running app at http://127.0.0.1:5000.
