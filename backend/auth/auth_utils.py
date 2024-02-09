@@ -25,6 +25,9 @@ def get_authenticated_user_details(request_headers):
 
 
 def fetchUserGroups(userToken, nextLink=None):
+    if userToken is None:
+        return []
+
     # Recursively fetch group membership
     if nextLink:
         endpoint = nextLink

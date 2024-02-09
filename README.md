@@ -17,7 +17,7 @@ This repo contains sample code for a simple chat webapp that integrates with Azu
     | --- | --- | ------------- |
     |AZURE_OPENAI_DEPLOYMENT||The name of your model deployment|
     |AZURE_OPENAI_ENDPOINT||The endpoint of your Azure OpenAI resource.|
-    |AZURE_OPENAI_KEY||One of the API keys of your Azure OpenAI resource|
+    |AZURE_OPENAI_API_KEY||One of the API keys of your Azure OpenAI resource|
     |AZURE_OPENAI_TEMPERATURE|0|What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. A value of 0 is recommended when using your data.|
     |AZURE_OPENAI_TOP_P|1.0|An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. We recommend setting this to 1.0 when using your data.|
     |AZURE_OPENAI_MAX_TOKENS|1000|The maximum number of tokens allowed for the generated answer.|

@@ -3,7 +3,7 @@ from azure.search.documents.indexes import SearchIndexClient
 from azure.search.documents.models import VectorizedQuery
 from openai import AzureOpenAI
 
-from config import AzureAISearchConfig, AzureOpenAPIConfig
+from utils.config import AzureAISearchConfig, AzureOpenAPIConfig
 
 
 def ai_search(query: str, user_groups: list(str)) -> list:

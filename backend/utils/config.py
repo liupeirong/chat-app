@@ -37,7 +37,6 @@ class AzureAISearchConfig(object):
 
 class AzureOpenAPIConfig(object):
   _instance = None
-  ENDPOINT: str
   API_VERSION: str
   KEY: str
   DEPLOYMENT: str
@@ -51,9 +50,7 @@ class AzureOpenAPIConfig(object):
   def __new__(cls):
     if cls._instance is None:
       cls._instance = super(AzureOpenAPIConfig, cls).__new__(cls)
-      cls._instance.ENDPOINT = os.environ.get("AZURE_OPENAI_ENDPOINT")
       cls._instance.API_VERSION = os.environ.get("AZURE_OPENAI_API_VERSION")
-      cls._instance.KEY = os.environ.get("AZURE_OPENAI_KEY")
       cls._instance.DEPLOYMENT = os.environ.get("AZURE_OPENAI_DEPLOYMENT")
       cls._instance.EMBEDDING_DEPLOYMENT = os.environ.get("AZURE_OPENAI_EMBEDDING_DEPLOYMENT")
       cls._instance.TEMPERATURE = os.environ.get("AZURE_OPENAI_TEMPERATURE", 0)
