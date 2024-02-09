@@ -35,20 +35,11 @@ export type Conversation = {
     date: string;
 }
 
-export enum ChatCompletionType {
-    ChatCompletion = "chat.completion",
-    ChatCompletionChunk = "chat.completion.chunk"
-}
-
 export type ChatResponseChoice = {
     messages: ChatMessage[];
 }
 
 export type ChatResponse = {
-    id: string;
-    model: string;
-    created: number;
-    object: ChatCompletionType;
     choices: ChatResponseChoice[];
     history_metadata: {
         conversation_id: string;

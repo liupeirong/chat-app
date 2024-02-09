@@ -30,22 +30,13 @@ logging.basicConfig(level=logging.getLevelName(LOGGING_LEVEL))
 
 cosmos_conversation_client = init_cosmosdb_client()
 
-@app.route("/conversation", methods=["GET", "POST"])
-def conversation():
-    user_token = request.headers.get('X-MS-TOKEN-AAD-ACCESS-TOKEN', "")
-    request_body = request.json
-    try:
-        return conversation_with_data(request_body, user_token)
-    except Exception as e:
-        logging.exception("Exception in /conversation")
-        return jsonify({"error": str(e)}), 500
-
 
 ## Conversation History API ## 
 @app.route("/history/generate", methods=["POST"])
 def add_conversation():
     authenticated_user = get_authenticated_user_details(request_headers=request.headers)
     user_id = authenticated_user['user_principal_id']
+    user_token = request.headers.get('X-MS-TOKEN-AAD-ACCESS-TOKEN', "")
 
     ## check request for conversation_id
     conversation_id = request.json.get("conversation_id", None)
@@ -80,7 +71,7 @@ def add_conversation():
         request_body = request.json
         history_metadata['conversation_id'] = conversation_id
         request_body['history_metadata'] = history_metadata
-        return conversation_with_data(request_body)
+        return conversation_with_data(request_body, user_token)
        
     except Exception as e:
         logging.exception("Exception in /history/generate")

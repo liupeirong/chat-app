@@ -20,10 +20,6 @@ def conversation_with_data(request_body, user_token=None):
           continue
 
         response = {
-          "id": "",
-          "model": "",
-          "created": 0,
-          "object": "",
           "choices": [{"messages": []}],
           "history_metadata": history_metadata,
         }

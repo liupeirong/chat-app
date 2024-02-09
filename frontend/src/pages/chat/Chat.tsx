@@ -14,12 +14,10 @@ import Azure from "../../assets/Azure.svg";
 import {
     ChatMessage,
     ConversationRequest,
-    conversationApi,
     Citation,
     ToolMessageContent,
     ChatResponse,
     getUserInfo,
-    Conversation,
     historyGenerate,
     historyUpdate,
     historyClear,
@@ -125,114 +123,6 @@ const Chat = () => {
                 setMessages([...messages, toolMessage, assistantMessage]);
         }
     }
-
-    const makeApiRequestWithoutCosmosDB = async (question: string, conversationId?: string) => {
-        setIsLoading(true);
-        setShowLoadingMessage(true);
-        const abortController = new AbortController();
-        abortFuncs.current.unshift(abortController);
-
-        const userMessage: ChatMessage = {
-            id: uuid(),
-            role: "user",
-            content: question,
-            date: new Date().toISOString(),
-        };
-
-        let conversation: Conversation | null | undefined;
-        if(!conversationId){
-            conversation = {
-                id: conversationId ?? uuid(),
-                title: question,
-                messages: [userMessage],
-                date: new Date().toISOString(),
-            }
-        }else{
-            conversation = appStateContext?.state?.currentChat
-            if(!conversation){
-                console.error("Conversation not found.");
-                setIsLoading(false);
-                setShowLoadingMessage(false);
-                abortFuncs.current = abortFuncs.current.filter(a => a !== abortController);
-                return;
-            }else{
-                conversation.messages.push(userMessage);
-            }
-        }
-
-        appStateContext?.dispatch({ type: 'UPDATE_CURRENT_CHAT', payload: conversation });
-        setMessages(conversation.messages)
-        
-        const request: ConversationRequest = {
-            messages: [...conversation.messages.filter((answer) => answer.role !== ERROR)]
-        };
-
-        let result = {} as ChatResponse;
-        try {
-            const response = await conversationApi(request, abortController.signal);
-            if (response?.body) {
-                const reader = response.body.getReader();
-                let runningText = "";
-
-                while (true) {
-                    setProcessMessages(messageStatus.Processing)
-                    const {done, value} = await reader.read();
-                    if (done) break;
-
-                    var text = new TextDecoder("utf-8").decode(value);
-                    const objects = text.split("\n");
-                    objects.forEach((obj) => {
-                        try {
-                            runningText += obj;
-                            result = JSON.parse(runningText);
-                            result.choices[0].messages.forEach((obj) => {
-                                obj.id = uuid();
-                                obj.date = new Date().toISOString();
-                            })
-                            setShowLoadingMessage(false);
-                            result.choices[0].messages.forEach((resultObj) => {
-                                processResultMessage(resultObj, userMessage, conversationId);
-                            })
-                            runningText = "";
-                        }
-                        catch { }
-                    });
-                }
-                conversation.messages.push(toolMessage, assistantMessage)
-                appStateContext?.dispatch({ type: 'UPDATE_CURRENT_CHAT', payload: conversation });
-                setMessages([...messages, toolMessage, assistantMessage]);
-            }
-            
-        } catch ( e )  {
-            if (!abortController.signal.aborted) {
-                let errorMessage = "An error occurred. Please try again. If the problem persists, please contact the site administrator.";
-                if (result.error?.message) {
-                    errorMessage = result.error.message;
-                }
-                else if (typeof result.error === "string") {
-                    errorMessage = result.error;
-                }
-                let errorChatMsg: ChatMessage = {
-                    id: uuid(),
-                    role: ERROR,
-                    content: errorMessage,
-                    date: new Date().toISOString()
-                }
-                conversation.messages.push(errorChatMsg);
-                appStateContext?.dispatch({ type: 'UPDATE_CURRENT_CHAT', payload: conversation });
-                setMessages([...messages, errorChatMsg]);
-            } else {
-                setMessages([...messages, userMessage])
-            }
-        } finally {
-            setIsLoading(false);
-            setShowLoadingMessage(false);
-            abortFuncs.current = abortFuncs.current.filter(a => a !== abortController);
-            setProcessMessages(messageStatus.Done)
-        }
-
-        return abortController.abort();
-    };
 
     const makeApiRequestWithCosmosDB = async (question: string, conversationId?: string) => {
         setIsLoading(true);
@@ -709,7 +599,7 @@ const Chat = () => {
                                 placeholder="Type a new question..."
                                 disabled={isLoading}
                                 onSend={(question, id) => {
-                                    appStateContext?.state.isCosmosDBAvailable?.cosmosDB ? makeApiRequestWithCosmosDB(question, id) : makeApiRequestWithoutCosmosDB(question, id)
+                                    appStateContext?.state.isCosmosDBAvailable?.cosmosDB ? makeApiRequestWithCosmosDB(question, id) : undefined 
                                 }}
                                 conversationId={appStateContext?.state.currentChat?.id ? appStateContext?.state.currentChat?.id : undefined}
                             />
