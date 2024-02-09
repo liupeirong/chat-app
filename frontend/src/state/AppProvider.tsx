@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, ReactNode, useEffect } from 'react';
 import { appStateReducer } from './AppReducer';
-import { Conversation, ChatHistoryLoadingState, CosmosDBHealth, historyList, historyEnsure, CosmosDBStatus, frontendSettings, FrontendSettings } from '../api';
+import { Conversation, ChatHistoryLoadingState, CosmosDBHealth, historyList, historyEnsure, CosmosDBStatus } from '../api';
   
 export interface AppState {
     isChatHistoryOpen: boolean;
@@ -9,7 +9,6 @@ export interface AppState {
     chatHistory: Conversation[] | null;
     filteredChatHistory: Conversation[] | null;
     currentChat: Conversation | null;
-    frontendSettings: FrontendSettings | null;
 }
 
 export type Action =
@@ -24,7 +23,6 @@ export type Action =
     | { type: 'DELETE_CHAT_HISTORY'}  // API Call
     | { type: 'DELETE_CURRENT_CHAT_MESSAGES', payload: string }  // API Call
     | { type: 'FETCH_CHAT_HISTORY', payload: Conversation[] | null }  // API Call
-    | { type: 'FETCH_FRONTEND_SETTINGS', payload: FrontendSettings | null }  // API Call
 
 const initialState: AppState = {
     isChatHistoryOpen: false,
@@ -36,7 +34,6 @@ const initialState: AppState = {
         cosmosDB: false,
         status: CosmosDBStatus.NotConfigured,
     },
-    frontendSettings: null,
 };
 
 export const AppStateContext = createContext<{
@@ -102,17 +99,6 @@ type AppStateProviderProps = {
         getHistoryEnsure();
     }, []);
 
-    useEffect(() => {
-        const getFrontendSettings = async () => {
-            frontendSettings().then((response) => {
-                dispatch({ type: 'FETCH_FRONTEND_SETTINGS', payload: response as FrontendSettings });
-            })
-            .catch((err) => {
-                console.error("There was an issue fetching your data.");
-            })
-        }
-        getFrontendSettings();
-    }, []);
   
     return (
       <AppStateContext.Provider value={{ state, dispatch }}>

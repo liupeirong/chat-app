@@ -75,8 +75,6 @@ If you run this app on a fully qualified domain or IP other than localhost, you 
 
 If you don't add an identity provider, the chat functionality of your app will be blocked to prevent unauthorized access to your resources and data.
 
-To remove this restriction, you can add `AUTH_ENABLED=False` to the environment variables. This will disable authentication and allow anyone to access the chat functionality of your app. **This is not recommended for production apps.**
-
 To add further access controls, update the logic in `getUserInfoList` in `frontend/src/pages/chat/Chat.tsx`.
 
 ### Updating the default chat logo and headers

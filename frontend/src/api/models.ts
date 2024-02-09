@@ -93,7 +93,3 @@ export type ErrorMessage = {
     title: string,
     subtitle: string
 }
-
-export type FrontendSettings = {
-    auth_enabled?: string | null;
-}

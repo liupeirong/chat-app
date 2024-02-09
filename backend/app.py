@@ -25,10 +25,8 @@ def favicon():
 def assets(path):
     return send_from_directory("../static/assets", path)
 
-# Debug settings
-DEBUG = os.environ.get("DEBUG", "false")
-if DEBUG.lower() == "true":
-    logging.basicConfig(level=logging.DEBUG)
+LOGGING_LEVEL = os.environ.get("LOGGING_LEVEL", "WARNING")
+logging.basicConfig(level=logging.getLevelName(LOGGING_LEVEL))
 
 cosmos_conversation_client = init_cosmosdb_client()
 
@@ -275,17 +273,6 @@ def ensure_cosmos():
         return jsonify({"error": "CosmosDB is not working"}), 500
 
     return jsonify({"message": "CosmosDB is configured and working"}), 200
-
-@app.route("/frontend_settings", methods=["GET"])  
-def get_frontend_settings():
-    try:
-        AUTH_ENABLED = os.environ.get("AUTH_ENABLED", "true").lower()
-        frontend_settings = { "auth_enabled": AUTH_ENABLED }
-        return jsonify(frontend_settings), 200
-    except Exception as e:
-        logging.exception("Exception in /frontend_settings")
-        return jsonify({"error": str(e)}), 500  
-
 
 if __name__ == "__main__":
     app.run()

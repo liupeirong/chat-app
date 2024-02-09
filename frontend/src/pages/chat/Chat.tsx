@@ -41,14 +41,13 @@ const enum messageStatus {
 
 const Chat = () => {
     const appStateContext = useContext(AppStateContext)
-    const AUTH_ENABLED = appStateContext?.state.frontendSettings?.auth_enabled === "true" ;
     const chatMessageStreamEnd = useRef<HTMLDivElement | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [showLoadingMessage, setShowLoadingMessage] = useState<boolean>(false);
     const [activeCitation, setActiveCitation] = useState<Citation>();
     const [isCitationPanelOpen, setIsCitationPanelOpen] = useState<boolean>(false);
     const abortFuncs = useRef([] as AbortController[]);
-    const [showAuthMessage, setShowAuthMessage] = useState<boolean>(true);
+    const [showAuthMessage, setShowAuthMessage] = useState<boolean | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [processMessages, setProcessMessages] = useState<messageStatus>(messageStatus.NotRunning);
     const [clearingChat, setClearingChat] = useState<boolean>(false);
@@ -94,10 +93,6 @@ const Chat = () => {
     }, [appStateContext?.state.chatHistoryLoadingState])
 
     const getUserInfoList = async () => {
-      if (!AUTH_ENABLED) {
-        setShowAuthMessage(false);
-        return;
-      }
       const userInfoList = await getUserInfo();
       if (userInfoList.length === 0 && window.location.hostname !== "127.0.0.1" && window.location.hostname.includes(".")) {
         setShowAuthMessage(true);
@@ -530,8 +525,8 @@ const Chat = () => {
     }, [processMessages]);
 
     useEffect(() => {
-        if (AUTH_ENABLED !== undefined) getUserInfoList();
-    }, [AUTH_ENABLED]);
+        if (showAuthMessage !== undefined) getUserInfoList();
+    }, [showAuthMessage]);
 
     useLayoutEffect(() => {
         chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" })
