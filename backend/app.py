@@ -5,8 +5,7 @@ from dotenv import load_dotenv
 
 from auth.auth_utils import get_authenticated_user_details
 from history.cosmos_client import init_cosmosdb_client
-from utils.llmrest import conversation_with_data
-from utils.aoaillm import generate_title
+from utils.aoaillm import conversation_with_data, generate_title
 
 load_dotenv()
 
