@@ -1,12 +1,12 @@
 from azure.core.credentials import AzureKeyCredential
 from azure.search.documents.indexes import SearchIndexClient
-from azure.search.documents.models import VectorizedQuery
+from azure.search.documents.models import VectorizedQuery, QueryType
 from openai import AzureOpenAI
 
 from utils.config import AzureAISearchConfig, AzureOpenAPIConfig
 
 
-def ai_search(query: str, user_groups: list(str)) -> list:
+def ai_search(query: str, user_groups: list) -> list:
   search_config = AzureAISearchConfig()
   credential = AzureKeyCredential(search_config.KEY)
   search_index_client = SearchIndexClient(endpoint=search_config.SERVICE, credential=credential)
@@ -25,10 +25,11 @@ def ai_search(query: str, user_groups: list(str)) -> list:
   results = search_client.search(
     search_text=query,
     vector_queries=[vector_query],
-    query_type=search_config.QUERY_TYPE,
+    query_type=QueryType.SEMANTIC if search_config.USE_SEMANTIC_SEARCH else QueryType.SIMPLE,
     semantic_configuration_name=search_config.SEMANTIC_SEARCH_CONFIG,
     top=search_config.TOP_K,
     filter= f"{search_config.PERMITTED_GROUPS_COLUMN}/any(g:search.in(g, '{group_ids}'))" if search_config.PERMITTED_GROUPS_COLUMN else None
   )
-
-  return results
+  
+  docs = [{'file': result[search_config.FILENAME_COLUMN], 'content': result['content']} for result in results]
+  return docs

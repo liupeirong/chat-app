@@ -29,8 +29,6 @@ logging.basicConfig(level=logging.getLevelName(LOGGING_LEVEL))
 
 cosmos_conversation_client = init_cosmosdb_client()
 
-
-## Conversation History API ## 
 @app.route("/history/generate", methods=["POST"])
 def add_conversation():
     authenticated_user = get_authenticated_user_details(request_headers=request.headers)

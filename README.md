@@ -40,7 +40,6 @@ This repo contains sample code for a simple chat webapp that integrates with Azu
     |AZURE_SEARCH_INDEX||The name of your Azure Cognitive Search Index|
     |AZURE_SEARCH_KEY||An **admin key** for your Azure Cognitive Search resource|
     |AZURE_SEARCH_USE_SEMANTIC_SEARCH|False|Whether or not to use semantic search|
-    |AZURE_SEARCH_QUERY_TYPE|simple|Query type: simple, semantic, vector, vectorSimpleHybrid, or vectorSemanticHybrid. Takes precedence over AZURE_SEARCH_USE_SEMANTIC_SEARCH|
     |AZURE_SEARCH_SEMANTIC_SEARCH_CONFIG||The name of the semantic search configuration to use if using semantic search.|
     |AZURE_SEARCH_TOP_K|5|The number of documents to retrieve from Azure Cognitive Search.|
     |AZURE_SEARCH_ENABLE_IN_DOMAIN|True|Limits responses to only queries relating to your data.|

@@ -5,25 +5,29 @@ from flask import Response
 
 from auth.auth_utils import fetchUserGroups
 from utils.config import AzureOpenAPIConfig
+from utils.aisearch import ai_search
 
 aoai_config = AzureOpenAPIConfig()
 aoai = AzureOpenAI(api_version=aoai_config.API_VERSION)
 
 
 def conversation_with_data(request_body, user_token=None):
-  user_groups = fetchUserGroups(user_token)
   history_metadata = request_body.get("history_metadata", {})
   conversation_messages = request_body["messages"]
-  messages = [{'role': msg['role'], 'content': msg['content']} for msg in conversation_messages]
+  messages = [{'role': msg['role'], 'content': msg['content']} for msg in conversation_messages[:-1]]
 
+  last_msg = conversation_messages[-1]
+  user_groups = fetchUserGroups(user_token)
+  search_docs = ai_search(last_msg['content'], user_groups)
+  messages.append({'role': 'user', 'content': json.dumps(search_docs)})
+
+  messages.append({'role': last_msg['role'], 'content': last_msg['content']})
   partial = None
   try:
     stream = aoai.chat.completions.create(
-        model=aoai_config.DEPLOYMENT,
-        messages=messages,
-        #tools=tools,
-        #tool_choice="auto",
-        stream=True 
+      model=aoai_config.DEPLOYMENT,
+      messages=messages,
+      stream=True 
     )
     for chunk in stream:
       if len(chunk.choices) == 0:
@@ -31,24 +35,19 @@ def conversation_with_data(request_body, user_token=None):
       if chunk.choices[0].delta.content is None:
         continue
 
-      response = {
-        "choices": [{"messages": []}],
-        "history_metadata": history_metadata,
-      }
-      answer = chunk.choices[0].delta
-      role, content = answer.role, answer.content
-
+      content = chunk.choices[0].delta.content
       if "error" in content:
         partial = yield format_as_ndjson(content)
-      
-      if role == "tool":
-        response["choices"][0]["messages"].append(answer)
       else:
+        response = {
+          "choices": [{"messages": []}],
+          "history_metadata": history_metadata,
+        }
         if content != "[DONE]":
           response["choices"][0]["messages"].append(
             {"role": "assistant", "content": content}
           )
-      partial = yield format_as_ndjson(response)
+        partial = yield format_as_ndjson(response)
 
   except Exception as e:
     partial = yield format_as_ndjson({"error" + str(e)})

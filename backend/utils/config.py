@@ -30,7 +30,6 @@ class AzureAISearchConfig(object):
       cls._instance.TITLE_COLUMN = os.environ.get("AZURE_SEARCH_TITLE_COLUMN", "title")
       cls._instance.URL_COLUMN = os.environ.get("AZURE_SEARCH_URL_COLUMN", "url")
       cls._instance.VECTOR_COLUMNS = os.environ.get("AZURE_SEARCH_VECTOR_COLUMNS", "contentVector")
-      cls._instance.QUERY_TYPE = os.environ.get("AZURE_SEARCH_QUERY_TYPE", "vectorSemanticHybrid")
       cls._instance.PERMITTED_GROUPS_COLUMN = os.environ.get("AZURE_SEARCH_PERMITTED_GROUPS_COLUMN", None)
     return cls._instance
   
