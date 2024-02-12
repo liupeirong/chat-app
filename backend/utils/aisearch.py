@@ -6,8 +6,24 @@ from openai import AzureOpenAI
 from utils.config import AzureAISearchConfig, AzureOpenAPIConfig
 
 
+search_config = AzureAISearchConfig()
+search_tool = {
+  "type": "function",
+  "function": {
+    "name": search_config.TOOL_NAME,
+    "description": search_config.TOOL_DESCRIPTION,
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "query": {"type": "string", "description": "The user's question to search for."},
+        },
+        "required": ["query"],
+    },
+  },
+}
+
+
 def ai_search(query: str, user_groups: list) -> list:
-  search_config = AzureAISearchConfig()
   credential = AzureKeyCredential(search_config.KEY)
   search_index_client = SearchIndexClient(endpoint=search_config.SERVICE, credential=credential)
   search_client = search_index_client.get_search_client(search_config.INDEX)

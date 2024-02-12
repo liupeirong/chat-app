@@ -15,6 +15,8 @@ class AzureAISearchConfig(object):
   VECTOR_COLUMNS: str
   QUERY_TYPE: str
   PERMITTED_GROUPS_COLUMN: str
+  TOOL_NAME: str
+  TOOL_DESCRIPTION: str
 
   def __new__(cls):
     if cls._instance is None:
@@ -22,6 +24,8 @@ class AzureAISearchConfig(object):
       cls._instance.SERVICE = os.environ.get("AZURE_SEARCH_SERVICE")
       cls._instance.INDEX = os.environ.get("AZURE_SEARCH_INDEX")
       cls._instance.KEY = os.environ.get("AZURE_SEARCH_KEY")
+      cls._instance.TOOL_NAME = os.environ.get("AZURE_SEARCH_TOOL_NAME")
+      cls._instance.TOOL_DESCRIPTION = os.environ.get("AZURE_SEARCH_TOOL_DESCRIPTION")
       cls._instance.USE_SEMANTIC_SEARCH = True if os.environ.get("AZURE_SEARCH_USE_SEMANTIC_SEARCH", "true").lower() == "true" else False
       cls._instance.SEMANTIC_SEARCH_CONFIG = os.environ.get("AZURE_SEARCH_SEMANTIC_SEARCH_CONFIG", "default")
       cls._instance.TOP_K = os.environ.get("AZURE_SEARCH_TOP_K", 3)

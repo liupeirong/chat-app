@@ -433,6 +433,7 @@ const Chat = () => {
         }
     };
 
+    //TODO: figure out how do we show citations for tool messages
     const parseCitationFromMessage = (message: ChatMessage) => {
         if (message?.role && message?.role === "tool") {
             try {

@@ -25,7 +25,7 @@ def get_authenticated_user_details(request_headers):
 
 
 def fetchUserGroups(userToken, nextLink=None):
-    if userToken is None:
+    if userToken is None or userToken == "":
         return []
 
     # Recursively fetch group membership
