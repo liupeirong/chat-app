@@ -47,7 +47,6 @@ class AzureOpenAPIConfig(object):
   TEMPERATURE: int
   TOP_P: float
   MAX_TOKENS: int
-  STREAM: bool
   SYSTEM_MESSAGE: str
 
   def __new__(cls):
@@ -59,6 +58,5 @@ class AzureOpenAPIConfig(object):
       cls._instance.TEMPERATURE = os.environ.get("AZURE_OPENAI_TEMPERATURE", 0)
       cls._instance.TOP_P = os.environ.get("AZURE_OPENAI_TOP_P", 1.0)
       cls._instance.MAX_TOKENS = os.environ.get("AZURE_OPENAI_MAX_TOKENS", 1000)
-      cls._instance.STREAM = True if os.environ.get("AZURE_OPENAI_STREAM", "true").lower() == "true" else False
       cls._instance.SYSTEM_MESSAGE = os.environ.get("AZURE_OPENAI_SYSTEM_MESSAGE")
     return cls._instance

@@ -16,6 +16,8 @@ def conversation_with_data(request_body, user_token=None):
   history_metadata = request_body.get("history_metadata", {})
   conversation_messages = request_body["messages"]
   messages = [{'role': msg['role'], 'content': msg['content']} for msg in conversation_messages]
+  if messages[0]['role'] != 'system':
+    messages.insert(0, {'role': 'system', 'content': aoai_config.SYSTEM_MESSAGE})
 
   tools = [search_tool]
   user_groups = fetchUserGroups(user_token)
@@ -35,6 +37,9 @@ def conversation_with_data(request_body, user_token=None):
         messages=messages,
         tools=tools,
         tool_choice="auto",
+        temperature=aoai_config.TEMPERATURE,
+        top_p=aoai_config.TOP_P,
+        max_tokens=aoai_config.MAX_TOKENS,
         stream=True 
       )
       for chunk in stream:
@@ -54,6 +59,7 @@ def conversation_with_data(request_body, user_token=None):
             "history_metadata": history_metadata,
           }
           partial = yield format_as_ndjson(response)
+          has_answer = True
     except Exception as e:
       partial = yield format_as_ndjson({"error" + str(e)})
 
